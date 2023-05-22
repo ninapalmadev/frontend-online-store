@@ -1,10 +1,11 @@
 import React from 'react';
 import propTypes from 'prop-types';
-import { getCategories } from '../services/api';
+import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
 
 class Home extends React.Component {
   state = {
     search: '',
+    searching: false,
     list: [],
     categories: [],
   };
@@ -15,16 +16,27 @@ class Home extends React.Component {
 
   getCategoryData = async () => {
     const categories = await getCategories();
-    console.log(categories);
+
     this.setState({
       categories,
     });
   };
 
-  handleSearch = ({ target }) => {
+  onInputChange = ({ target }) => {
     const { name, value } = target;
+
     this.setState({
       [name]: value,
+    });
+  };
+
+  onQueryButtonClick = async () => {
+    const { search } = this.state;
+    const { results } = await getProductsFromCategoryAndQuery('', search);
+
+    this.setState({
+      list: results,
+      searching: true,
     });
   };
 
@@ -35,18 +47,27 @@ class Home extends React.Component {
   };
 
   render() {
-    const { search, list, categories } = this.state;
+    const { search, list, categories, searching } = this.state;
+
     return (
       <div>
         <div>
-          <label htmlFor="">
-            <input
-              type="text"
-              name={ search }
-              value={ search }
-              onChange={ this.handleSearch }
-            />
-          </label>
+          <label htmlFor="search-input">Caixa de pesquisa</label>
+          <input
+            data-testid="query-input"
+            id="search-input"
+            name="search"
+            type="text"
+            value={ search }
+            onInput={ this.onInputChange }
+          />
+
+          <button
+            data-testid="query-button"
+            onClick={ this.onQueryButtonClick }
+          >
+            Procurar
+          </button>
 
           <button
             data-testid="shopping-cart-button"
@@ -66,7 +87,9 @@ class Home extends React.Component {
                   id={ `${id}-${name}` }
                   name="category"
                   type="radio"
+                  value={ name }
                   data-testid="category"
+                  onChange={ this.onInputChange }
                 />
               </>))
           }
@@ -75,9 +98,41 @@ class Home extends React.Component {
         {
           list.length === 0
           && (
-            <p data-testid="home-initial-message">
+            <p
+              data-testid="home-initial-message"
+            >
               Digite algum termo de pesquisa ou escolha uma categoria.
             </p>)
+        }
+
+        {
+          (list.length === 0 && searching)
+          && <p>Nenhum produto foi encontrado</p>
+        }
+
+        {
+          (list.length > 0 && searching)
+          && list.map((product) => {
+            const {
+              title,
+              thumbnail,
+              price,
+            } = product;
+
+            return (
+              <div
+                data-testid="product"
+                key={ product.catalog_product_id }
+              >
+                <h1>{ title }</h1>
+                <img
+                  src={ thumbnail }
+                  alt="Product thumbnail"
+                />
+                <p>{ price }</p>
+              </div>
+            );
+          })
         }
       </div>
     );
