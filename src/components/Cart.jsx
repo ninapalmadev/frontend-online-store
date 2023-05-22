@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 
 class Cart extends Component {
   state = {
-    cart: []
+    cart: [],
   };
 
-  render () {
+  render() {
     const { cart } = this.state;
 
     return (
