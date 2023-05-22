@@ -1,10 +1,24 @@
 import React from 'react';
 import propTypes from 'prop-types';
+import { getCategories } from '../services/api';
 
 class Home extends React.Component {
   state = {
     search: '',
     list: [],
+    categories: [],
+  };
+
+  componentDidMount() {
+    this.getCategoryData();
+  }
+
+  getCategoryData = async () => {
+    const categories = await getCategories();
+    console.log(categories);
+    this.setState({
+      categories,
+    });
   };
 
   handleSearch = ({ target }) => {
@@ -21,7 +35,7 @@ class Home extends React.Component {
   };
 
   render() {
-    const { search, list } = this.state;
+    const { search, list, categories } = this.state;
     return (
       <div>
         <div>
@@ -41,6 +55,23 @@ class Home extends React.Component {
             Carrinho
           </button>
         </div>
+
+        <div>
+          {
+            categories.map(({ id, name }) => (
+              <>
+                <label htmlFor={ `${id}-${name}` }>{ name }</label>
+                <input
+                  key={ `${id}-${name}` }
+                  id={ `${id}-${name}` }
+                  name="category"
+                  type="radio"
+                  data-testid="category"
+                />
+              </>))
+          }
+        </div>
+
         {
           list.length === 0
           && (
