@@ -1,6 +1,8 @@
 import React from 'react';
 import propTypes from 'prop-types';
 import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
+import Categories from './Categories';
+import ProductCard from './ProductCard';
 
 class Home extends React.Component {
   state = {
@@ -46,6 +48,16 @@ class Home extends React.Component {
     history.push('/cart');
   };
 
+  handleRadioCLick = async (event) => {
+    const { value } = event.target;
+    const { results } = await getProductsFromCategoryAndQuery('', value);
+
+    this.setState({
+      list: results,
+      searching: true,
+    });
+  };
+
   render() {
     const { search, list, categories, searching } = this.state;
 
@@ -79,60 +91,43 @@ class Home extends React.Component {
 
         <div>
           {
-            categories.map(({ id, name }) => (
-              <>
-                <label htmlFor={ `${id}-${name}` }>{ name }</label>
-                <input
-                  key={ `${id}-${name}` }
-                  id={ `${id}-${name}` }
-                  name="category"
-                  type="radio"
-                  value={ name }
-                  data-testid="category"
-                  onChange={ this.onInputChange }
-                />
-              </>))
+            categories.map(({ name }, index) => (
+              <Categories
+                onClick={ this.handleRadioCLick }
+                key={ index }
+                name={ name }
+              />
+            ))
           }
         </div>
-
-        {
-          list.length === 0
+        <div>
+          {
+            list.length === 0
           && (
             <p
               data-testid="home-initial-message"
             >
               Digite algum termo de pesquisa ou escolha uma categoria.
             </p>)
-        }
-
+          }
+        </div>
         {
           (list.length === 0 && searching)
           && <p>Nenhum produto foi encontrado</p>
         }
-
         {
           (list.length > 0 && searching)
-          && list.map((product) => {
-            const {
-              title,
-              thumbnail,
-              price,
-            } = product;
-
-            return (
-              <div
-                data-testid="product"
-                key={ product.catalog_product_id }
-              >
-                <h1>{ title }</h1>
-                <img
-                  src={ thumbnail }
-                  alt="Product thumbnail"
-                />
-                <p>{ price }</p>
-              </div>
-            );
-          })
+          && list.map((product) => (
+            <div key={ product.catalog_product_id }>
+              <ProductCard
+                id={ product.id }
+                title={ product.title }
+                price={ product.price }
+                thumbnail={ product.thumbnail }
+                product={ product }
+              />
+            </div>
+          ))
         }
       </div>
     );
