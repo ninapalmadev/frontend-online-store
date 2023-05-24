@@ -11,7 +11,13 @@ class ProductCard extends Component {
       id,
     } = this.props;
 
-    const product = { id, title, price, thumbnail };
+    const product = {
+      id,
+      title,
+      price,
+      thumbnail,
+      quantity: 1,
+    };
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const inCart = cart.some((item) => item.id === id);
     if (!inCart) {

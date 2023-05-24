@@ -21,7 +21,7 @@ class ProductDetails extends React.Component {
   onCartButtonClick = () => {
     const { products } = this.state;
     const { id, title, price, thumbnail } = products;
-    const product = { id, title, price, thumbnail };
+    const product = { id, title, price, thumbnail, quantity: 1 };
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const inCart = cart.some((item) => item.id === id);
     if (!inCart) {
