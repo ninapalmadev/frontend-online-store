@@ -42,13 +42,13 @@ class ProductDetails extends React.Component {
         <p data-testid="product-detail-price">{ products.price }</p>
         <button
           type="button"
-          data-testid="shopping-cart-button"
+          data-testid="product-detail-add-to-cart"
           onClick={ this.onCartButtonClick }
         >
           Enviar para o carrinho
         </button>
 
-        <Link to="/cart">Carrinho</Link>
+        <Link to="/cart" data-testid="shopping-cart-button">Carrinho</Link>
       </div>
     );
   }
