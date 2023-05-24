@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-class Categories extends React.Component {
+class Categories extends Component {
   render() {
     const {
       id,
       name,
       onClick,
     } = this.props;
+
     return (
       <div>
         <label htmlFor={ `${id}-${name}` }>{ name }</label>
@@ -18,7 +19,6 @@ class Categories extends React.Component {
           type="radio"
           value={ name }
           data-testid="category"
-          // onChange={ this.onInputChange }
           onClick={ onClick }
         />
       </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import { getProductById } from '../services/api';
 
 class ProductDetails extends React.Component {
@@ -17,6 +18,17 @@ class ProductDetails extends React.Component {
     this.setState({ products: response });
   };
 
+  onCartButtonClick = () => {
+    const { products } = this.state;
+    const { id, title, price, thumbnail } = products;
+    const product = { id, title, price, thumbnail };
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const inCart = cart.some((item) => item.id === id);
+    if (!inCart) {
+      localStorage.setItem('cart', JSON.stringify([...cart, product]));
+    }
+  };
+
   render() {
     const { products } = this.state;
     return (
@@ -31,9 +43,12 @@ class ProductDetails extends React.Component {
         <button
           type="button"
           data-testid="shopping-cart-button"
+          onClick={ this.onCartButtonClick }
         >
           Enviar para o carrinho
         </button>
+
+        <Link to="/cart">Carrinho</Link>
       </div>
     );
   }

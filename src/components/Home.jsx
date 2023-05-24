@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { Component } from 'react';
 import propTypes from 'prop-types';
 import { getCategories, getProductsFromCategoryAndQuery } from '../services/api';
 import Categories from './Categories';
 import ProductCard from './ProductCard';
 
-class Home extends React.Component {
+class Home extends Component {
   state = {
     search: '',
     searching: false,
@@ -53,13 +53,19 @@ class Home extends React.Component {
     const { results } = await getProductsFromCategoryAndQuery('', value);
 
     this.setState({
+      search: '',
       list: results,
       searching: true,
     });
   };
 
   render() {
-    const { search, list, categories, searching } = this.state;
+    const {
+      search,
+      searching,
+      list,
+      categories,
+    } = this.state;
 
     return (
       <div>
@@ -93,42 +99,45 @@ class Home extends React.Component {
           {
             categories.map(({ name }, index) => (
               <Categories
-                onClick={ this.handleRadioCLick }
                 key={ index }
                 name={ name }
+                onClick={ this.handleRadioCLick }
               />
             ))
           }
         </div>
+
         <div>
           {
             list.length === 0
-          && (
-            <p
-              data-testid="home-initial-message"
-            >
-              Digite algum termo de pesquisa ou escolha uma categoria.
-            </p>)
+            && (
+              <p
+                data-testid="home-initial-message"
+              >
+                Digite algum termo de pesquisa ou escolha uma categoria.
+              </p>)
+          }
+
+          {
+            (list.length === 0 && searching)
+            && <p>Nenhum produto foi encontrado</p>
+          }
+
+          {
+            (list.length > 0 && searching)
+            && list.map((product) => (
+              <div key={ product.id }>
+                <ProductCard
+                  id={ product.id }
+                  title={ product.title }
+                  price={ product.price }
+                  thumbnail={ product.thumbnail }
+                  product={ product }
+                />
+              </div>
+            ))
           }
         </div>
-        {
-          (list.length === 0 && searching)
-          && <p>Nenhum produto foi encontrado</p>
-        }
-        {
-          (list.length > 0 && searching)
-          && list.map((product) => (
-            <div key={ product.catalog_product_id }>
-              <ProductCard
-                id={ product.id }
-                title={ product.title }
-                price={ product.price }
-                thumbnail={ product.thumbnail }
-                product={ product }
-              />
-            </div>
-          ))
-        }
       </div>
     );
   }
